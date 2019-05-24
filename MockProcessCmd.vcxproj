@@ -163,6 +163,9 @@
     <ClInclude Include="rcb.h" />
     <ClInclude Include="splitTool.h" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="Bug.txt" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

@@ -28,8 +28,15 @@ int processManager::createProcess(string pName, int priority)
 	PCB* pcb = new PCB(pid, pName, (processPriorities)priority, runningProcess);
 	pcb->showThisProcess();
 	
+
 	// 放入进程表
 	processTable.push_back(pcb);
+
+	// init进程处理
+	if (priority == 0)
+	{
+		this->runningProcess = pcb;
+	}
 
 	// 放入就绪队列
 	switch (priority)
@@ -48,6 +55,24 @@ int processManager::createProcess(string pName, int priority)
 		break;
 	}
 
+	// del test
+	this->runningProcess = pcb;
+
+	// 调度 todo
+	return 1;
+}
+
+/* 撤销进程 Process can be destroyed by any of its ancestors or by itself (exit)  */
+int processManager::destroyProcess(int pid)
+{
+	// 根据pid寻找进程
+
+	// 嵌套调用，撤销所有子孙进程 
+
+	// free resources 
+
+	// delete PCB and update all pointers 
+
 	return 1;
 }
 
@@ -56,7 +81,6 @@ void processManager::Schedule()
 {
 
 }
-
 
 
 /* 根据pid在进程表中寻找进程 (用于释放进程) */
@@ -89,7 +113,7 @@ bool processManager::checkProcessName(string name)
 
 /*************************************************************
  *  processManager
- *  get()
+ *  get() show()
  *************************************************************/
 
 /* 获取正在执行进程的ID */
@@ -127,4 +151,30 @@ void processManager::showReadyList()
 		cout << (*initList)->getPname() << " ";
 	}
 	cout << endl;
+}
+
+/* 显示主进程表 */
+void processManager::showProcessTable()
+{
+	vector<PCB*>::iterator data;
+	cout << "****** Process Table ******" << endl;
+	cout << "PID  NAME PRIORITY TYPE LIST FATHER " << endl;
+	for (data = processTable.begin(); data != processTable.end(); data++)
+	{
+		cout << (*data)->getPid() << "    ";
+		cout << (*data)->getPname() << "    ";
+		cout << (*data)->getPriority() << "    ";
+		cout << (*data)->getType() << "    ";
+		cout << (*data)->getList() << "    ";
+		if (((*data)->getFather()) != "null")
+		{
+			cout << (*data)->getFather() << "    ";
+		}
+		else {
+			cout << "     " << "    ";
+		}
+		(*data)->showChilds();
+		cout << endl;
+	}
+	cout << "*************************" << endl;
 }

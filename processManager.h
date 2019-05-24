@@ -18,6 +18,7 @@ public:
 
 public:
 	int createProcess(string pName, int priority);
+	int destroyProcess(int pid);
 
 	void Schedule();
 
@@ -27,6 +28,7 @@ public:
 public:
 	int getRunningProcess();
 	void showReadyList();
+	void showProcessTable();
 
 private:
 	PCB* runningProcess;                // 正在执行进程指针

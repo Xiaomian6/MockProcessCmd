@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <string>
+#include <vector>
 #include "rcb.h"
 
 using namespace std;
@@ -27,7 +28,7 @@ struct processStatus
 struct processCreationTree
 {
 	PCB* parent;
-	list<PCB*> child;
+	vector<PCB*> child;
 };
 
 class PCB {
@@ -36,12 +37,17 @@ public:
 	PCB(int pid, string pName, processPriorities priority, PCB* parent);
 	~PCB();
 public:
-	
+	int addChild(PCB* child);
 
 public:
 	void showThisProcess();
 	int getPid();
 	string getPname();
+	int getPriority();
+	string getType();
+	string getList();
+	string getFather();
+	void showChilds();        //函数内输出
 
 private:
 	int pid;                       // 进程ID

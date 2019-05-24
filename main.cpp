@@ -11,7 +11,7 @@
 using namespace std;
 
 void inputCmd(vector<string>& argvs);
-void initCmd(const vector<string>& argvs);
+void initCmd();
 void createProcessCmd(const vector<string>& argvs);
 void destroyProcessCmd(const vector<string>& argvs);
 void requestResourcesCmd(const vector<string>& argvs);
@@ -21,9 +21,10 @@ void showResourcesListCmd(const vector<string>& argvs);
 void timeOutCmd(const vector<string>& argvs);
 void quitCmd(const vector<string>& argvs);
 void showHelpCmd(const vector<string>& argvs);
+void showProcessTable(const vector<string>& argvs);
 
 static const map<string, void(*)(const vector<string> &)> mapCmd = {
-	{ "init"    , initCmd               },   //
+	//{ "init"    , initCmd               },   //
 	{ "cr"      , createProcessCmd      },   //
 	{ "de"      , destroyProcessCmd     },   //
 	{ "req"     , requestResourcesCmd   },   //
@@ -31,7 +32,8 @@ static const map<string, void(*)(const vector<string> &)> mapCmd = {
 	{ "sready"  , showReadyListCmd      },   //
 	{ "sres"    , showResourcesListCmd  },   //
 	{ "to"      , timeOutCmd            },   //
-	{ "quit"    , quitCmd               }    //
+	{ "quit"    , quitCmd               },    //
+	{ "ps"      , showProcessTable               }    //
 };
 
 static bool quit_flag = true;  // 关闭按钮
@@ -46,7 +48,8 @@ int main()
 	cout << "====================" << "Test Shell" << "====================" << endl;
 	cout << "==================================================" << endl;
 	
-	// 自动调用initCmd（）todo
+	// 自动调用initCmd（）
+	initCmd();
 
 	while (quit_flag)
 	{
@@ -69,7 +72,7 @@ void inputCmd(vector<string>& argvs)
 {
 	while (argvs.size() == 0)
 	{
-		cout << "shell$ >";
+		cout << "$shell >";
 		string input;
 		getline(cin, input);
 		split(input, ' ' , argvs);   // 自定义 String: split函数 位于splitTool.h
@@ -89,10 +92,17 @@ void inputCmd(vector<string>& argvs)
  *  Function: init进程
  *  Format: init
  *************************************************************/
-void initCmd(const vector<string>& argvs)  
+void initCmd()  
 {
 	int illegalShow = 0; // 不合法显示 
-
+	illegalShow = processManagerRun.createProcess("init", 0);
+	if (illegalShow == 1)
+	{
+		cout << "[sucess]init进程成功创建!" << endl;
+	}
+	else {
+		cout << "BUG BUG BUG BUG" << endl;
+	}
 }
 
 /*************************************************************
@@ -221,4 +231,13 @@ void quitCmd(const vector<string>& argvs)
 void showHelpCmd(const vector<string>& argvs)
 {
 
+}
+
+/*************************************************************
+ *  Function: show process table
+ *  Format: ps
+ *************************************************************/
+void showProcessTable(const vector<string>& argvs)
+{
+	processManagerRun.showProcessTable();
 }
