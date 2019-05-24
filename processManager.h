@@ -17,13 +17,17 @@ public:
 	~processManager();
 
 public:
-	int createProcess(string pName, int priority);
-	int destroyProcess(int pid);
+	int createProcess(const string pName,int priority);
+	int destroyProcess(const string delname);
 
 	void Schedule();
 
-	vector<PCB*>::iterator findProcess(int pid);
+	int deleteChildProcess(int pid);
+
+	vector<PCB*>::iterator findProcessbypID(int pid);
+	vector<PCB*>::iterator findProcessbypName(string pname);
 	bool checkProcessName(string name);
+	bool checkProcessID(int pid);
 
 public:
 	int getRunningProcess();

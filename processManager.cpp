@@ -14,11 +14,12 @@ processManager::~processManager()
 }
 
 /* 创建新进程 */
-int processManager::createProcess(string pName, int priority)
+int processManager::createProcess(const string pName, int priority)
 {
 	int pid = 0;
+
 	// 查看进程表是否有重名进程 error=2
-	if (checkProcessName(pName) == false)
+	if (checkProcessName(pName) == true)
 	{
 		return 2;
 	}
@@ -28,7 +29,6 @@ int processManager::createProcess(string pName, int priority)
 	PCB* pcb = new PCB(pid, pName, (processPriorities)priority, runningProcess);
 	pcb->showThisProcess();
 	
-
 	// 放入进程表
 	processTable.push_back(pcb);
 
@@ -63,15 +63,30 @@ int processManager::createProcess(string pName, int priority)
 }
 
 /* 撤销进程 Process can be destroyed by any of its ancestors or by itself (exit)  */
-int processManager::destroyProcess(int pid)
+int processManager::destroyProcess(const string delname)
 {
-	// 根据pid寻找进程
+	vector<PCB*>::iterator delData;
 
-	// 嵌套调用，撤销所有子孙进程 
+	// 查看撤销进程ID是否在进程表
+	if (checkProcessName(delname) == false)
+	{
+		return 2;
+	}
+	
+	// 根据pname寻找进程
+	delData = this->findProcessbypName(delname);
+
+	PCB* pcb = (*delData);
 
 	// free resources 
 
+
+	// 嵌套调用，撤销所有子孙进程 
+
+
+
 	// delete PCB and update all pointers 
+
 
 	return 1;
 }
@@ -81,10 +96,14 @@ void processManager::Schedule()
 {
 
 }
+/* 删除child node 进程 */
+int processManager::deleteChildProcess(int pid)
+{
 
+}
 
-/* 根据pid在进程表中寻找进程 (用于释放进程) */
-vector<PCB*>::iterator processManager::findProcess(int pid)
+/* 根据pid在进程表中寻找进程  */
+vector<PCB*>::iterator processManager::findProcessbypID(int pid)
 {
 	vector<PCB*>::iterator data;
 
@@ -95,7 +114,19 @@ vector<PCB*>::iterator processManager::findProcess(int pid)
 	return data;
 }
 
-/* 检查进程名是否重名 */
+/* 根据pname在进程表中寻找进程  */
+vector<PCB*>::iterator processManager::findProcessbypName(string pname)
+{
+	vector<PCB*>::iterator data;
+
+	for (data = processTable.begin(); data != processTable.end(); data++)
+		if ((*data)->getPname() == pname)
+			return data;
+
+	return data;
+}
+
+/* 检查进程名是否存在 */
 bool processManager::checkProcessName(string name)
 {
 	vector<PCB*>::iterator data;
@@ -104,11 +135,27 @@ bool processManager::checkProcessName(string name)
 	{
 		if ((*data)->getPname() == name)
 		{
-			return false;
+			return true;
 		}
 	}
 
-	return true;
+	return false;
+}
+
+/* 检查进程表是否存在此ID */
+bool processManager::checkProcessID(int id)
+{
+	vector<PCB*>::iterator data;
+
+	for (data = processTable.begin(); data != processTable.end(); data++)
+	{
+		if ((*data)->getPid() == id)
+		{
+			return true;
+		}
+	}
+
+	return false;
 }
 
 /*************************************************************

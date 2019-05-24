@@ -22,6 +22,7 @@ void timeOutCmd(const vector<string>& argvs);
 void quitCmd(const vector<string>& argvs);
 void showHelpCmd(const vector<string>& argvs);
 void showProcessTable(const vector<string>& argvs);
+void showOneProcess(const vector<string>& argvs);
 
 static const map<string, void(*)(const vector<string> &)> mapCmd = {
 	//{ "init"    , initCmd               },   //
@@ -33,7 +34,8 @@ static const map<string, void(*)(const vector<string> &)> mapCmd = {
 	{ "sres"    , showResourcesListCmd  },   //
 	{ "to"      , timeOutCmd            },   //
 	{ "quit"    , quitCmd               },    //
-	{ "ps"      , showProcessTable               }    //
+	{ "ps"      , showProcessTable      },    //
+	{ "pr"      , showOneProcess        }    //
 };
 
 static bool quit_flag = true;  // 关闭按钮
@@ -161,30 +163,133 @@ void createProcessCmd(const vector<string>& argvs)
 }
 
 /*************************************************************
- *  Function: init进程
- *  Format: init
+ *  Function: delete process
+ *  Format: de [pname]
  *************************************************************/
 void destroyProcessCmd(const vector<string>& argvs)
 {
+	int illegalShow = 0; // 不合法显示 
 
+	switch (argvs.size())
+	{
+	case 2:  // de [pname]
+		illegalShow = processManagerRun.destroyProcess(argvs[1]);
+		break;
+
+	default:
+		cout << "[error]de 命令不合法!" << endl;
+		break;
+	}
+
+	// 1 - 合法
+	// 2 - 进程名不存在
+	// 3 - 
+	switch (illegalShow)
+	{
+	case 1:
+		cout << "[success]进程(name:" << argvs[1] << ")撤销成功!" << endl;
+		break;
+
+	case 2:
+		cout << "[error]进程名不存在!" << endl;
+		break;
+
+	case 3:
+		cout << "[error]!" << endl;
+		break;
+
+	default:
+		break;
+	}
 }
 
 /*************************************************************
- *  Function: init进程
- *  Format: init
+ *  Function: request resources
+ *  Format: req [r-name] [number]
+ *  Now: R1 - 1
+         R2 - 2
+		 R3 - 3
+		 R4 - 4
  *************************************************************/
 void requestResourcesCmd(const vector<string>& argvs)
 {
+	int illegalShow = 0; // 不合法显示 
 
+	switch (argvs.size())
+	{
+	case 2:  // default number 默认number = 1
+		illegalShow = ;
+		break;
+
+	case 3:  // 
+
+		break;
+	default:
+		cout << "[error]req 命令不合法!" << endl;
+		break;
+	}
+
+	// 1 - 合法
+	// 2 - 
+	// 3 - 
+	switch (illegalShow)
+	{
+	case 1:
+		cout << "[success]进程(name:" << argvs[1] << ")撤销成功!" << endl;
+		break;
+
+	case 2:
+		cout << "[error]进程名不存在!" << endl;
+		break;
+
+	case 3:
+		cout << "[error]!" << endl;
+		break;
+
+	default:
+		break;
+	}
 }
 
 /*************************************************************
- *  Function: init进程
- *  Format: init
+ *  Function: release resources
+ *  Format: del [r-name] [number]
  *************************************************************/
 void releaseResoursesCmd(const vector<string>& argvs)
 {
+	int illegalShow = 0; // 不合法显示 
 
+	switch (argvs.size())
+	{
+	case 2:  // de [pname]
+		illegalShow = processManagerRun.destroyProcess(argvs[1]);
+		break;
+
+	default:
+		cout << "[error]de 命令不合法!" << endl;
+		break;
+	}
+
+	// 1 - 合法
+	// 2 - 进程名不存在
+	// 3 - 
+	switch (illegalShow)
+	{
+	case 1:
+		cout << "[success]进程(name:" << argvs[1] << ")撤销成功!" << endl;
+		break;
+
+	case 2:
+		cout << "[error]进程名不存在!" << endl;
+		break;
+
+	case 3:
+		cout << "[error]!" << endl;
+		break;
+
+	default:
+		break;
+	}
 }
 
 /*************************************************************
@@ -197,8 +302,8 @@ void showReadyListCmd(const vector<string>& argvs)
 }
 
 /*************************************************************
- *  Function: init进程
- *  Format: init
+ *  Function: 
+ *  Format: sres
  *************************************************************/
 void showResourcesListCmd(const vector<string>& argvs)
 {
@@ -206,8 +311,8 @@ void showResourcesListCmd(const vector<string>& argvs)
 }
 
 /*************************************************************
- *  Function: init进程
- *  Format: init
+ *  Function: 
+ *  Format: to
  *************************************************************/
 void timeOutCmd(const vector<string>& argvs)
 {
@@ -215,8 +320,8 @@ void timeOutCmd(const vector<string>& argvs)
 }
 
 /*************************************************************
- *  Function: init进程
- *  Format: init
+ *  Function: quit cmd
+ *  Format: quit
  *************************************************************/
 void quitCmd(const vector<string>& argvs)
 {
@@ -225,8 +330,8 @@ void quitCmd(const vector<string>& argvs)
 }
 
 /*************************************************************
- *  Function: init进程
- *  Format: init
+ *  Function: show cmd help
+ *  Format: 
  *************************************************************/
 void showHelpCmd(const vector<string>& argvs)
 {
@@ -239,5 +344,55 @@ void showHelpCmd(const vector<string>& argvs)
  *************************************************************/
 void showProcessTable(const vector<string>& argvs)
 {
-	processManagerRun.showProcessTable();
+	switch (argvs.size())
+	{
+	case 1:  
+		processManagerRun.showProcessTable();
+		break;
+
+	default:
+		cout << "[error]ps 命令不合法!" << endl;
+		break;
+	}
+}
+
+/*************************************************************
+ *  Function: show process information by name
+ *  Format: pr [p-name]
+ *************************************************************/
+void showOneProcess(const vector<string>& argvs)
+{
+	int illegalShow = 0; // 不合法显示 
+
+	switch (argvs.size())
+	{
+	case 2:  // pr [p-name]
+		
+		break;
+
+	default:
+		cout << "[error]pr 命令不合法!" << endl;
+		break;
+	}
+
+	// 1 - 合法
+	// 2 - 进程名不存在
+	// 3 - 
+	switch (illegalShow)
+	{
+	case 1:
+		cout << "[success]进程(name:" << argvs[1] << ")撤销成功!" << endl;
+		break;
+
+	case 2:
+		cout << "[error]进程名不存在!" << endl;
+		break;
+
+	case 3:
+		cout << "[error]!" << endl;
+		break;
+
+	default:
+		break;
+	}
 }
