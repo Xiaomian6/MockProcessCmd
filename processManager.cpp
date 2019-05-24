@@ -4,7 +4,8 @@ using namespace std;
 
 processManager::processManager() // todo
 {
-	this->allocation_pid = 0;
+	this->allocation_pid = 1;
+	this->runningProcess = nullptr;
 }
 
 processManager::~processManager()
@@ -25,7 +26,8 @@ int processManager::createProcess(string pName, int priority)
 	pid = this->allocation_pid++;
 	// 初始化PCB
 	PCB* pcb = new PCB(pid, pName, (processPriorities)priority, runningProcess);
-
+	pcb->showThisProcess();
+	
 	// 放入进程表
 	processTable.push_back(pcb);
 

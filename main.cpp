@@ -91,7 +91,8 @@ void inputCmd(vector<string>& argvs)
  *************************************************************/
 void initCmd(const vector<string>& argvs)  
 {
-	
+	int illegalShow = 0; // 不合法显示 
+
 }
 
 /*************************************************************
