@@ -46,7 +46,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Bug.txt">
+    <Text Include="development.txt">
       <Filter>资源文件</Filter>
     </Text>
   </ItemGroup>

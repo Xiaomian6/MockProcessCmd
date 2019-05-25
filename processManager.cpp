@@ -30,7 +30,7 @@ int processManager::createProcess(const string pName, int priority)
 	pcb->showThisProcess();
 	
 	// 放入进程表
-	processTable.push_back(pcb);
+	this->processTable.push_back(pcb);
 
 	// init进程处理
 	if (priority == 0)
@@ -99,7 +99,7 @@ void processManager::Schedule()
 /* 删除child node 进程 */
 int processManager::deleteChildProcess(int pid)
 {
-
+	return 1;
 }
 
 /* 根据pid在进程表中寻找进程  */
@@ -160,7 +160,97 @@ bool processManager::checkProcessID(int id)
 
 /*************************************************************
  *  processManager
- *  get() show()
+ *  RCB
+ *************************************************************/
+
+/* 创建并初始化资源列表 */
+void processManager::createResources()
+{
+	// 创建4类资源
+	// R1 1 
+	// R2 2
+	// R3 3
+	// R4 4
+
+	RCB* rcb1 = new RCB(1,"R1", 1);
+	RCB* rcb2 = new RCB(2,"R2", 2);
+	RCB* rcb3 = new RCB(3,"R3", 3);
+	RCB* rcb4 = new RCB(4,"R4", 4);
+
+	this->resourcesTable.push_back(rcb1);
+	this->resourcesTable.push_back(rcb2);
+	this->resourcesTable.push_back(rcb3);
+	this->resourcesTable.push_back(rcb4);
+}
+
+/* 请求资源 */
+int processManager::requestResources(const string rName, const int number)
+{
+	// 检查是否有此资源 error=2
+	if (checkResourcesName(rName) == false)
+	{
+		return 2;
+	}
+
+	// 检查请求是否超过此资源总量 error=3
+	if (checkResourcesInitnum(rName, number) == false)
+	{
+		return 3;
+	}
+
+	// 根据rName找到相应RCB
+	findResourcesByName(rName);
+
+	return 1;
+}
+
+/* 根据rname在资源列表中寻找资源  */
+RCB* processManager::findResourcesByName(string rname)
+{
+	vector<RCB*>::iterator data;
+
+	for (data = resourcesTable.begin(); data != resourcesTable.end(); data++)
+		if ((*data)->getRname() == rname)
+			return *data;
+
+	return *data;
+}
+
+/* 检查资源名是否存在 */
+bool processManager::checkResourcesName(string name)
+{
+	vector<RCB*>::iterator data;
+
+	for (data = resourcesTable.begin(); data != resourcesTable.end(); data++)
+	{
+		if ((*data)->getRname() == name)
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+/* 检查请求是否超过此资源总量 */
+bool  processManager::checkResourcesInitnum(string name, int num)
+{
+	vector<RCB*>::iterator data;
+
+	for (data = resourcesTable.begin(); data != resourcesTable.end(); data++)
+	{
+		if ((*data)->getInitNum() >= num)
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+/*************************************************************
+ *  processManager
+ *  get() - show()
  *************************************************************/
 
 /* 获取正在执行进程的ID */
@@ -222,6 +312,21 @@ void processManager::showProcessTable()
 		}
 		(*data)->showChilds();
 		cout << endl;
+	}
+	cout << "*************************" << endl;
+}
+
+/* 显示资源列表 */
+void processManager::showResourcesTable()
+{
+	vector<RCB*>::iterator data;
+
+	cout << "**** Resources Table ****" << endl;
+	cout << "Name  number" << endl;
+	for (data = resourcesTable.begin(); data != resourcesTable.end(); data++)
+	{
+		cout << (*data)->getRname() << "       ";
+		cout << (*data)->getNumber() << endl;
 	}
 	cout << "*************************" << endl;
 }

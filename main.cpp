@@ -53,6 +53,9 @@ int main()
 	// 自动调用initCmd（）
 	initCmd();
 
+	// 调用创建资源并初始化函数
+	processManagerRun.createResources();
+
 	while (quit_flag)
 	{
 		vector<string> argvs;  // 局部变量，自动清空
@@ -214,15 +217,16 @@ void destroyProcessCmd(const vector<string>& argvs)
 void requestResourcesCmd(const vector<string>& argvs)
 {
 	int illegalShow = 0; // 不合法显示 
+	int requestNum = 0;
 
 	switch (argvs.size())
 	{
 	case 2:  // default number 默认number = 1
-		illegalShow = ;
+		illegalShow = processManagerRun.requestResources(argvs[1], 1);
 		break;
-
-	case 3:  // 
-
+	case 3:  // req R1 2
+		requestNum = stoi(argvs[2]); // 把string转为int
+		illegalShow = processManagerRun.requestResources(argvs[1], requestNum);
 		break;
 	default:
 		cout << "[error]req 命令不合法!" << endl;
@@ -230,20 +234,20 @@ void requestResourcesCmd(const vector<string>& argvs)
 	}
 
 	// 1 - 合法
-	// 2 - 
-	// 3 - 
+	// 2 - 请求资源不存在
+	// 3 - 请求超过此资源总量
 	switch (illegalShow)
 	{
 	case 1:
-		cout << "[success]进程(name:" << argvs[1] << ")撤销成功!" << endl;
+		cout << "[success]资源(name:" << argvs[1] << ")请求成功!" << endl;
 		break;
 
 	case 2:
-		cout << "[error]进程名不存在!" << endl;
+		cout << "[error]请求资源不存在!" << endl;
 		break;
 
 	case 3:
-		cout << "[error]!" << endl;
+		cout << "[error]请求超过此资源总量!" << endl;
 		break;
 
 	default:
@@ -302,12 +306,21 @@ void showReadyListCmd(const vector<string>& argvs)
 }
 
 /*************************************************************
- *  Function: 
+ *  Function: show resources table
  *  Format: sres
  *************************************************************/
 void showResourcesListCmd(const vector<string>& argvs)
 {
+	switch (argvs.size())
+	{
+	case 1:
+		processManagerRun.showResourcesTable();
+		break;
 
+	default:
+		cout << "[error]sres 命令不合法!" << endl;
+		break;
+	}
 }
 
 /*************************************************************
