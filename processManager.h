@@ -46,6 +46,8 @@ private:
 	vector<PCB*> processTable;          // 进程表
 	int allocation_pid;                 // 进程id分配
 	vector<RCB*> resourcesTable;        // 资源列表
+	vector<RCB*> blockList;             // 阻塞队列
+
 
 	// 三级就绪进程队列
 	vector<PCB*> initReadyList;

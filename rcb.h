@@ -17,6 +17,8 @@ public:
 	~RCB();
 
 public:
+	int requestR(RCB* rcb, const int num,PCB* pcb);
+public:
 	int getRid();
 	string getRname();
 	int getNumber();

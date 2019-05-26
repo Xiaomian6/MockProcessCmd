@@ -15,6 +15,20 @@ RCB::~RCB()
 
 }
 
+/* 请求资源 */
+int RCB::requestR(RCB* rcb, const int num, PCB* pcb)
+{
+	if (rcb->rStatus >= num)  // 剩余资源足够
+	{
+		rcb->rStatus = rcb->rStatus - num;
+
+	}
+	else // 剩余资源不够，阻塞
+	{
+
+	}
+	return 1;
+}
 
 /*************************************************************
  *  RCB

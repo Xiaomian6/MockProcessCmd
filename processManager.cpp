@@ -199,7 +199,10 @@ int processManager::requestResources(const string rName, const int number)
 	}
 
 	// 根据rName找到相应RCB
-	findResourcesByName(rName);
+	RCB* rcb = findResourcesByName(rName);
+
+	// request
+	rcb->requestR(rcb, number, runningProcess);
 
 	return 1;
 }

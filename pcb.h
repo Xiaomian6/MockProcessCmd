@@ -14,9 +14,11 @@ enum processType { READY, RUNNING, BLOCKED };     // 进程状态
 enum processList { READYLIST, BLOCKLIST };         // 进程队列
 enum processPriorities { INIT, USER, SYSTEM };    // 进程优先级
 
-struct processResource
+struct otherResource
 {
-	// todo 构造初始化
+	int owned;            // 占有的资源id
+	int ownNum;           // 占用的数量
+
 };
 
 struct processStatus
