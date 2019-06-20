@@ -3,6 +3,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <queue>
 
 #include "pcb.h"
 #include "rcb.h"
@@ -34,6 +35,9 @@ public: // rcb
 	RCB* findResourcesByName(string rname);
 	bool checkResourcesName(string name);
 	bool checkResourcesInitnum(string name, int num);
+	bool removeInitReadyListFirst();
+	bool removeUserReadyListFirst();
+	bool removeSystemReadyListFirst();
 
 public: // get() show()
 	int getRunningProcess();
@@ -50,7 +54,7 @@ private:
 	vector<RCB*> blockList;             // 阻塞队列
 
 	// 三级就绪进程队列
-	vector<PCB*> initReadyList;
-	vector<PCB*> userReadyList;
-	vector<PCB*> systemReadyList;
+	queue<PCB*> initReadyList;
+	queue<PCB*> userReadyList;
+	queue<PCB*> systemReadyList;
 };

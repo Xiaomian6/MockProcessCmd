@@ -27,10 +27,44 @@ PCB::~PCB()
 
 }
 
+/* 添加进程的子进程 */
 int PCB::addChild(PCB* child)
 {
 	this->pTree.child.push_back(child);
 	return 1;
+}
+
+/* 添加进程的资源块 */
+int PCB::addResource(int num, RCB* rcb)
+{
+	// 遍历进程占有资源列表是否有相同的 RCB 块
+	for (vector<Resource>::iterator iter = Resources.begin(); iter != Resources.end(); iter++)
+	{
+		if (iter->rcb == rcb)
+		{
+			iter->ownNum = iter->ownNum + num;
+			return 1;
+		}
+	}
+
+	// 没有找到 则添加
+	Resource newResource(rcb->getRid, num, rcb);   // 创建 pcb 的资源块 Resource
+	this->Resources.push_back(newResource);        // 添加到进程的占有资源列表
+	return 0;
+}
+
+/* 进程设置为阻塞态 */
+int PCB::changeBLOCKED()
+{
+	this->pStatus.pType = BLOCKED;
+	return 0;
+}
+
+/* 进程设置为阻塞列表 */
+int PCB::changeBLOCKLIST()
+{
+	this->pStatus.pList = BLOCKLIST;
+	return 0;
 }
 
 

@@ -16,8 +16,16 @@ enum processPriorities { INIT, USER, SYSTEM };    // 进程优先级
 
 struct Resource
 {
-	int owned;            // 占有的资源id
+	int ownID;            // 占有的资源id
 	int ownNum;           // 占用的数量
+	RCB* rcb;             // 指向RCB块
+
+	Resource(int ownID, int ownNum, RCB* rcb)
+	{
+		this->ownID = ownID;
+		this->ownNum = ownNum;
+		this->rcb = rcb;
+	}
 };
 
 struct processStatus
@@ -39,6 +47,9 @@ public:
 	~PCB();
 public:
 	int addChild(PCB* child);
+	int addResource(int num, RCB *rcb);
+	int changeBLOCKED();
+	int changeBLOCKLIST();
 
 public:
 	void showThisProcess();
@@ -53,7 +64,7 @@ public:
 private:
 	int pid;                       // 进程ID
 	string pName;                  // 进程名
-	vector<Resource> Resources;    // 占有资源
+	vector<Resource> Resources;    // 占有资源列表
 	processStatus pStatus;         // 进程状态 
 								   //         - Type[READY就绪态, RUNNING运行态, BLOCKED阻塞态]
 								   //         - List[READYLIST就绪等待队列, BLOCKLIST阻塞等待队列]

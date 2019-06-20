@@ -191,13 +191,13 @@ int processManager::requestResources(const string rName, const int number)
 {
 	int operand = 0; // 操作数
 
-	// 检查是否有此资源 error=2
+	// 检查是否有此资源 error = 2
 	if (checkResourcesName(rName) == false)
 	{
 		return 2;
 	}
 
-	// 检查请求是否超过此资源总量 error=3
+	// 检查请求是否超过此资源总量 error = 3
 	if (checkResourcesInitnum(rName, number) == false)
 	{
 		return 3;
@@ -209,11 +209,39 @@ int processManager::requestResources(const string rName, const int number)
 	// request
 	if (rcb->getNumber() >= number)  // 剩余资源足够
 	{
-		operand = rcb->requestR(number, runningProcess); // 减去请求数
-
+		operand = rcb->requestR(number, runningProcess);  // 减去请求数量资源
+		runningProcess->addResource(number, rcb);         // 把rcb插入pcb的占有资源列表
 	}
 	else // 剩余资源不够，阻塞
 	{
+		// 进程设置 阻塞状态
+		runningProcess->changeBLOCKED();
+
+		// 进程加入 阻塞列表
+		runningProcess->changeBLOCKLIST();
+
+		// 因为运行进程位于绪队列首部，所以此时将它从 就绪队列 移除
+		switch (runningProcess->getPriority)
+		{
+		case 0: // INIT
+			
+			break;
+
+		case 1: // USER
+			
+			break;
+
+		case 2: // SYSTEM
+			
+			break;
+
+		default:
+			break;
+		}
+
+		// 插入 RCB 资源阻塞等待队列
+
+		// 调度
 
 	}
 
@@ -265,6 +293,26 @@ bool  processManager::checkResourcesInitnum(string name, int num)
 	}
 
 	return false; // error
+}
+
+/* 移除 Init 就绪队列首部 */
+bool processManager::removeInitReadyListFirst()
+{
+	
+
+	return false; // error
+}
+
+/* 移除 User 就绪队列首部 */
+bool processManager::removeUserReadyListFirst()
+{
+
+}
+
+/* 移除 System 就绪队列首部 */
+bool processManager::removeSystemReadyListFirst()
+{
+
 }
 
 /*************************************************************

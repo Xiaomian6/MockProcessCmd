@@ -30,6 +30,6 @@ private:
 	string rName;                // 资源名
 	int rStatus;                 // 资源状态 数量
 	int initNum;                 // 初始化数量
-	list<PCB*> waitingList;      // 阻塞等待队列
+	list<PCB*> waitingList;      // 资源阻塞等待队列
 
 };
