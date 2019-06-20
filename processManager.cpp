@@ -4,7 +4,7 @@ using namespace std;
 
 processManager::processManager() // todo
 {
-	this->allocation_pid = 1;
+	this->allocation_pid = 1; // pid 自增 从 PID = 1 开始
 	this->runningProcess = nullptr;
 }
 
@@ -18,7 +18,7 @@ int processManager::createProcess(const string pName, int priority)
 {
 	int pid = 0;
 
-	// 查看进程表是否有重名进程 error=2
+	// 查看进程表是否有重名进程 error = 2
 	if (checkProcessName(pName) == true)
 	{
 		return 2;
@@ -27,6 +27,7 @@ int processManager::createProcess(const string pName, int priority)
 	pid = this->allocation_pid++;
 	// 初始化PCB
 	PCB* pcb = new PCB(pid, pName, (processPriorities)priority, runningProcess);
+
 	pcb->showThisProcess();
 	
 	// 放入进程表
@@ -73,7 +74,7 @@ int processManager::destroyProcess(const string delname)
 		return 2;
 	}
 	
-	// 根据pname寻找进程
+	// 根据 pname 寻找进程，返回 进程块
 	delData = this->findProcessbypName(delname);
 
 	PCB* pcb = (*delData);
@@ -96,13 +97,15 @@ void processManager::Schedule()
 {
 
 }
+
 /* 删除child node 进程 */
 int processManager::deleteChildProcess(int pid)
 {
+
 	return 1;
 }
 
-/* 根据pid在进程表中寻找进程  */
+/* 根据 pid 在进程表中寻找进程  */
 vector<PCB*>::iterator processManager::findProcessbypID(int pid)
 {
 	vector<PCB*>::iterator data;
@@ -114,7 +117,7 @@ vector<PCB*>::iterator processManager::findProcessbypID(int pid)
 	return data;
 }
 
-/* 根据pname在进程表中寻找进程  */
+/* 根据 pname 在进程表中寻找进程  */
 vector<PCB*>::iterator processManager::findProcessbypName(string pname)
 {
 	vector<PCB*>::iterator data;
@@ -167,10 +170,10 @@ bool processManager::checkProcessID(int id)
 void processManager::createResources()
 {
 	// 创建4类资源
-	// R1 1 
-	// R2 2
-	// R3 3
-	// R4 4
+	// R1  1 
+	// R2  2
+	// R3  3
+	// R4  4
 
 	RCB* rcb1 = new RCB(1,"R1", 1);
 	RCB* rcb2 = new RCB(2,"R2", 2);
@@ -186,6 +189,8 @@ void processManager::createResources()
 /* 请求资源 */
 int processManager::requestResources(const string rName, const int number)
 {
+	int operand = 0; // 操作数
+
 	// 检查是否有此资源 error=2
 	if (checkResourcesName(rName) == false)
 	{
@@ -198,11 +203,22 @@ int processManager::requestResources(const string rName, const int number)
 		return 3;
 	}
 
-	// 根据rName找到相应RCB
+	// 根据 rName 找到相应 RCB块
 	RCB* rcb = findResourcesByName(rName);
 
 	// request
-	rcb->requestR(rcb, number, runningProcess);
+	if (rcb->getNumber() >= number)  // 剩余资源足够
+	{
+		operand = rcb->requestR(number, runningProcess); // 减去请求数
+
+	}
+	else // 剩余资源不够，阻塞
+	{
+
+	}
+
+
+
 
 	return 1;
 }
@@ -232,7 +248,7 @@ bool processManager::checkResourcesName(string name)
 		}
 	}
 
-	return false;
+	return false; // error
 }
 
 /* 检查请求是否超过此资源总量 */
@@ -248,7 +264,7 @@ bool  processManager::checkResourcesInitnum(string name, int num)
 		}
 	}
 
-	return false;
+	return false; // error
 }
 
 /*************************************************************

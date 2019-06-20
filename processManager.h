@@ -20,7 +20,7 @@ public: // pcb
 	int createProcess(const string pName,int priority);
 	int destroyProcess(const string delname);
 
-	void Schedule();
+	void Schedule(); // 调度
 
 	int deleteChildProcess(int pid);
 
@@ -44,14 +44,13 @@ public: // get() show()
 private:
 	PCB* runningProcess;                // 正在执行进程指针
 	vector<PCB*> processTable;          // 进程表
-	int allocation_pid;                 // 进程id分配
+	int allocation_pid;                 // 进程id分配(自增)
+
 	vector<RCB*> resourcesTable;        // 资源列表
 	vector<RCB*> blockList;             // 阻塞队列
-
 
 	// 三级就绪进程队列
 	vector<PCB*> initReadyList;
 	vector<PCB*> userReadyList;
 	vector<PCB*> systemReadyList;
-
 };

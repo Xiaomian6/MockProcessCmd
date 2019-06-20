@@ -11,14 +11,13 @@ extern class PCB;
 extern class RCB;
 
 enum processType { READY, RUNNING, BLOCKED };     // 进程状态
-enum processList { READYLIST, BLOCKLIST };         // 进程队列
+enum processList { READYLIST, BLOCKLIST };        // 进程队列
 enum processPriorities { INIT, USER, SYSTEM };    // 进程优先级
 
-struct otherResource
+struct Resource
 {
 	int owned;            // 占有的资源id
 	int ownNum;           // 占用的数量
-
 };
 
 struct processStatus
@@ -54,7 +53,7 @@ public:
 private:
 	int pid;                       // 进程ID
 	string pName;                  // 进程名
-	// processResource pResource;     // 占有资源
+	vector<Resource> Resources;    // 占有资源
 	processStatus pStatus;         // 进程状态 
 								   //         - Type[READY就绪态, RUNNING运行态, BLOCKED阻塞态]
 								   //         - List[READYLIST就绪等待队列, BLOCKLIST阻塞等待队列]

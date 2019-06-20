@@ -16,9 +16,10 @@ public:
 	RCB(int rid, string rName, int initNum);
 	~RCB();
 
-public:
-	int requestR(RCB* rcb, const int num,PCB* pcb);
-public:
+public:  
+	int requestR(const int num,PCB* pcb);
+
+public: // get() show()
 	int getRid();
 	string getRname();
 	int getNumber();

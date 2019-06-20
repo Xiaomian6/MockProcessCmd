@@ -2,7 +2,6 @@
 #include <vector>
 #include <string>
 #include <map>
-
 #include "pcb.h"
 #include "rcb.h"
 #include "processManager.h"
@@ -10,22 +9,23 @@
 
 using namespace std;
 
-void inputCmd(vector<string>& argvs);
-void initCmd();
-void createProcessCmd(const vector<string>& argvs);
-void destroyProcessCmd(const vector<string>& argvs);
-void requestResourcesCmd(const vector<string>& argvs);
-void releaseResoursesCmd(const vector<string>& argvs);
-void showReadyListCmd(const vector<string>& argvs);
-void showResourcesListCmd(const vector<string>& argvs);
-void timeOutCmd(const vector<string>& argvs);
-void quitCmd(const vector<string>& argvs);
-void showHelpCmd(const vector<string>& argvs);
-void showProcessTable(const vector<string>& argvs);
-void showOneProcess(const vector<string>& argvs);
+void inputCmd(vector<string>& argvs);                    // 命令输入模块
+void initCmd();                                          // Cmd初始化模块
+void createProcessCmd(const vector<string>& argvs);      // 进程创建模块
+void destroyProcessCmd(const vector<string>& argvs);     // 进程释放模块
+void requestResourcesCmd(const vector<string>& argvs);   // 资源申请模块 
+void releaseResoursesCmd(const vector<string>& argvs);   // 资源释放模块 
+void showReadyListCmd(const vector<string>& argvs);      // 显示就绪队列
+void showResourcesListCmd(const vector<string>& argvs);  // 显示资源情况
+void timeOutCmd(const vector<string>& argvs);            // 时间片切换(调度)
+void quitCmd(const vector<string>& argvs);               // 退出Cmd
+void showHelpCmd(const vector<string>& argvs);           // 显示帮助信息(自启)
+void showProcessTable(const vector<string>& argvs);      // 显示进程表
+void showOneProcess(const vector<string>& argvs);        // 显示某个进程情况
 
+// Cmd 命令列表
 static const map<string, void(*)(const vector<string> &)> mapCmd = {
-	//{ "init"    , initCmd               },   //
+	//{ "init"    , initCmd               }, //
 	{ "cr"      , createProcessCmd      },   //
 	{ "de"      , destroyProcessCmd     },   //
 	{ "req"     , requestResourcesCmd   },   //
@@ -33,12 +33,12 @@ static const map<string, void(*)(const vector<string> &)> mapCmd = {
 	{ "sready"  , showReadyListCmd      },   //
 	{ "sres"    , showResourcesListCmd  },   //
 	{ "to"      , timeOutCmd            },   //
-	{ "quit"    , quitCmd               },    //
-	{ "ps"      , showProcessTable      },    //
+	{ "quit"    , quitCmd               },   //
+	{ "ps"      , showProcessTable      },   //
 	{ "pr"      , showOneProcess        }    //
 };
 
-static bool quit_flag = true;  // 关闭按钮
+static bool quit_flag = true;  // 关闭按钮 false = 退出
 
 // 实例化一个进程管理类
 static processManager processManagerRun;
@@ -53,14 +53,14 @@ int main()
 	// 自动调用initCmd（）
 	initCmd();
 
-	// 调用创建资源并初始化函数
+	// 自动调用创建资源并初始化函数
 	processManagerRun.createResources();
 
 	while (quit_flag)
 	{
-		vector<string> argvs;  // 局部变量，自动清空
+		vector<string> argvs;  // 局部变量，每次循环自动清空
 
-		inputCmd(argvs);   // 输入处理
+		inputCmd(argvs);   // 命令输入模块
 
 		try {
 			mapCmd.at(argvs[0])(argvs);
@@ -122,7 +122,7 @@ void createProcessCmd(const vector<string>& argvs)
 	
 	switch (argvs.size())
 	{
-	case 2:  // default priority 默认USER优先级
+	case 2:  // default priority 默认USER优先级 = 1
 		cout << "[prompt]缺省优先级,默认USER优先级" << endl;
 		illegalShow = processManagerRun.createProcess(argvs[1], 1);
 		break;
@@ -339,7 +339,7 @@ void timeOutCmd(const vector<string>& argvs)
 void quitCmd(const vector<string>& argvs)
 {
 	cout << "Quit!" << endl;
-	quit_flag = false;
+	quit_flag = false;  // 全局变量 false 退出
 }
 
 /*************************************************************
