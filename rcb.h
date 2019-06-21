@@ -18,6 +18,7 @@ public:
 
 public:  
 	int requestR(const int num,PCB* pcb);
+	int addWaitingList(PCB* pcb);
 
 public: // get() show()
 	int getRid();

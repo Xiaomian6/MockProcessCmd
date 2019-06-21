@@ -48,7 +48,7 @@ int PCB::addResource(int num, RCB* rcb)
 	}
 
 	// 没有找到 则添加
-	Resource newResource(rcb->getRid, num, rcb);   // 创建 pcb 的资源块 Resource
+	Resource newResource(rcb->getRid(), num, rcb);   // 创建 pcb 的资源块 Resource
 	this->Resources.push_back(newResource);        // 添加到进程的占有资源列表
 	return 0;
 }

@@ -3,7 +3,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include <queue>
+#include <list>
 
 #include "pcb.h"
 #include "rcb.h"
@@ -44,6 +44,7 @@ public: // get() show()
 	void showReadyList();
 	void showProcessTable();
 	void showResourcesTable();
+	void showBlockList();
 
 private:
 	PCB* runningProcess;                // 正在执行进程指针
@@ -51,10 +52,12 @@ private:
 	int allocation_pid;                 // 进程id分配(自增)
 
 	vector<RCB*> resourcesTable;        // 资源列表
-	vector<RCB*> blockList;             // 阻塞队列
 
 	// 三级就绪进程队列
-	queue<PCB*> initReadyList;
-	queue<PCB*> userReadyList;
-	queue<PCB*> systemReadyList;
+	list<PCB*> initReadyList;
+	list<PCB*> userReadyList;
+	list<PCB*> systemReadyList;
+
+	// 阻塞队列
+	list<PCB*> blockList;             
 };

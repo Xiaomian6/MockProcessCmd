@@ -30,6 +30,12 @@ int RCB::requestR(const int num, PCB* pcb)
 	return 0;
 }
 
+/* 添加入资源阻塞等待队列 */
+int RCB::addWaitingList(PCB* pcb)
+{
+	this->waitingList.push_back(pcb);
+	return 0;
+}
 /*************************************************************
  *  RCB
  *  get() show()

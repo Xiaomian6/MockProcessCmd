@@ -28,7 +28,7 @@ int processManager::createProcess(const string pName, int priority)
 	// 初始化PCB
 	PCB* pcb = new PCB(pid, pName, (processPriorities)priority, runningProcess);
 
-	pcb->showThisProcess();
+	// pcb->showThisProcess(); // show test
 	
 	// 放入进程表
 	this->processTable.push_back(pcb);
@@ -221,18 +221,21 @@ int processManager::requestResources(const string rName, const int number)
 		runningProcess->changeBLOCKLIST();
 
 		// 因为运行进程位于绪队列首部，所以此时将它从 就绪队列 移除
-		switch (runningProcess->getPriority)
+		switch (runningProcess->getPriority())
 		{
 		case 0: // INIT
-			
+			initReadyList.pop_front();   // 删除就绪队列第一个元素
+			blockList.push_back(runningProcess);
 			break;
 
 		case 1: // USER
-			
+			userReadyList.pop_front();
+			blockList.push_back(runningProcess);
 			break;
 
 		case 2: // SYSTEM
-			
+			userReadyList.pop_front();
+			blockList.push_back(runningProcess);
 			break;
 
 		default:
@@ -240,14 +243,11 @@ int processManager::requestResources(const string rName, const int number)
 		}
 
 		// 插入 RCB 资源阻塞等待队列
-
-		// 调度
+		rcb->addWaitingList(runningProcess);
 
 	}
 
-
-
-
+	// 调度
 	return 1;
 }
 
@@ -306,13 +306,13 @@ bool processManager::removeInitReadyListFirst()
 /* 移除 User 就绪队列首部 */
 bool processManager::removeUserReadyListFirst()
 {
-
+	return false;
 }
 
 /* 移除 System 就绪队列首部 */
 bool processManager::removeSystemReadyListFirst()
 {
-
+	return false;
 }
 
 /*************************************************************
@@ -329,9 +329,9 @@ int processManager::getRunningProcess()
 /* 显示就绪进程队列 */
 void processManager::showReadyList()
 {
-	vector<PCB*>::iterator initList;
-	vector<PCB*>::iterator userList;
-	vector<PCB*>::iterator systemList;
+	list<PCB*>::iterator initList;
+	list<PCB*>::iterator userList;
+	list<PCB*>::iterator systemList;
 
 	cout << "[show] ReadyList" << endl;
 
@@ -395,5 +395,19 @@ void processManager::showResourcesTable()
 		cout << (*data)->getRname() << "       ";
 		cout << (*data)->getNumber() << endl;
 	}
+	cout << "*************************" << endl;
+}
+
+/* 显示进程阻塞队列 */
+void processManager::showBlockList()
+{
+	list<PCB*>::iterator data;
+
+	cout << "**** blockList ****" << endl;
+	for (data = blockList.begin(); data != blockList.end(); data++)
+	{
+		cout << (*data)->getPname() << "  ";
+	}
+	cout << endl;
 	cout << "*************************" << endl;
 }

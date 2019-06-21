@@ -19,9 +19,11 @@ void showReadyListCmd(const vector<string>& argvs);      // 显示就绪队列
 void showResourcesListCmd(const vector<string>& argvs);  // 显示资源情况
 void timeOutCmd(const vector<string>& argvs);            // 时间片切换(调度)
 void quitCmd(const vector<string>& argvs);               // 退出Cmd
-void showHelpCmd(const vector<string>& argvs);           // 显示帮助信息(自启)
+void showHelpCmd();                                      // 显示帮助信息(自启)
 void showProcessTable(const vector<string>& argvs);      // 显示进程表
 void showOneProcess(const vector<string>& argvs);        // 显示某个进程情况
+void showBlockList(const vector<string>& argvs);         // 显示阻塞列表
+
 
 // Cmd 命令列表
 static const map<string, void(*)(const vector<string> &)> mapCmd = {
@@ -35,7 +37,8 @@ static const map<string, void(*)(const vector<string> &)> mapCmd = {
 	{ "to"      , timeOutCmd            },   //
 	{ "quit"    , quitCmd               },   //
 	{ "ps"      , showProcessTable      },   //
-	{ "pr"      , showOneProcess        }    //
+	{ "pr"      , showOneProcess        },   //
+	{ "pb"      , showBlockList         }    //
 };
 
 static bool quit_flag = true;  // 关闭按钮 false = 退出
@@ -56,11 +59,14 @@ int main()
 	// 自动调用创建资源并初始化函数
 	processManagerRun.createResources();
 
+	// 显示Help
+	showHelpCmd();
+
 	while (quit_flag)
 	{
 		vector<string> argvs;  // 局部变量，每次循环自动清空
 
-		inputCmd(argvs);   // 命令输入模块
+		inputCmd(argvs);       // 命令输入模块
 
 		try {
 			mapCmd.at(argvs[0])(argvs);
@@ -346,9 +352,19 @@ void quitCmd(const vector<string>& argvs)
  *  Function: show cmd help
  *  Format: 
  *************************************************************/
-void showHelpCmd(const vector<string>& argvs)
+void showHelpCmd()
 {
-
+	cout << "--------------------- Help --------------------" << endl;
+	cout << "创建进程:     cr [pName] [priority] 如:cr x 1" << endl;
+	cout << "撤销进程:     de [pname]            如: de x " << endl;
+	cout << "请求资源:     req [r-name] [number] 如: req R1 2" << endl;
+	cout << "释放资源:     del [r-name] [number] 如: rel R1 2" << endl;
+	cout << "显示就绪队列: sready" << endl;
+	cout << "显示资源表:   sres" << endl;
+	cout << "显示进程表:   ps" << endl;
+	cout << "时间片切换:   to" << endl;
+	cout << "退出Cmd:      quit" << endl;
+	cout << "----------------------------------------------" << endl;
 }
 
 /*************************************************************
@@ -406,6 +422,24 @@ void showOneProcess(const vector<string>& argvs)
 		break;
 
 	default:
+		break;
+	}
+}
+
+/*************************************************************
+ *  Function: show BlockList
+ *  Format: pb
+ *************************************************************/
+void showBlockList(const vector<string>& argvs)
+{
+	switch (argvs.size())
+	{
+	case 1:
+		processManagerRun.showBlockList();
+		break;
+
+	default:
+		cout << "[error]ps 命令不合法!" << endl;
 		break;
 	}
 }
