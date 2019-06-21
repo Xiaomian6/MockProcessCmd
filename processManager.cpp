@@ -37,6 +37,7 @@ int processManager::createProcess(const string pName, int priority)
 	if (priority == 0)
 	{
 		this->runningProcess = pcb;
+		runningProcess->changeRUNNING();
 	}
 
 	// 放入就绪队列
@@ -57,9 +58,18 @@ int processManager::createProcess(const string pName, int priority)
 	}
 
 	// del test
-	this->runningProcess = pcb;
+	// this->runningProcess = pcb;
 
-	// 调度 todo
+	// 调度 
+	// 如果新建进程比正在执行进程优先级高
+	if (runningProcess->getPriority() < pcb->getPriority())
+	{
+		runningProcess->changeREADY();
+		this->runningProcess = pcb;
+		runningProcess->changeRUNNING();
+		cout << "[warnning]切换进程 " + runningProcess->getPname() + " 运行" << endl;
+	}
+
 	return 1;
 }
 
@@ -92,9 +102,28 @@ int processManager::destroyProcess(const string delname)
 	return 1;
 }
 
-/* 进程调度 */
+/* 进程调度Schedule */
 void processManager::Schedule()
 {
+	// 当有2级进程
+	if (systemReadyList.size() != 0)
+	{
+		systemReadyList.pop_front();                // 移除system 就绪列表第一个
+		systemReadyList.push_back(runningProcess);  // 把它放入就绪表队列末尾
+		runningProcess->changeREADY();
+		runningProcess->changeREADYLIST();
+		runningProcess = systemReadyList.front();   // 正在执行进程指针 指向就绪队列第一个
+		runningProcess->changeRUNNING();
+	}
+	else  // 当没有2级进程的, 只有1级就绪队列
+	{
+		userReadyList.pop_front();                  // 移除user 就绪列表第一个
+		userReadyList.push_back(runningProcess);    // 把它放入就绪表队列末尾
+		runningProcess->changeREADY();
+		runningProcess->changeREADYLIST();
+		runningProcess = userReadyList.front();     // 正在执行进程指针 指向就绪队列第一个
+		runningProcess->changeRUNNING();
+	}
 
 }
 
@@ -211,6 +240,7 @@ int processManager::requestResources(const string rName, const int number)
 	{
 		operand = rcb->requestR(number, runningProcess);  // 减去请求数量资源
 		runningProcess->addResource(number, rcb);         // 把rcb插入pcb的占有资源列表
+		return 1;
 	}
 	else // 剩余资源不够，阻塞
 	{
@@ -220,22 +250,51 @@ int processManager::requestResources(const string rName, const int number)
 		// 进程加入 阻塞列表
 		runningProcess->changeBLOCKLIST();
 
-		// 因为运行进程位于绪队列首部，所以此时将它从 就绪队列 移除
+		// 因为运行进程位于绪队列首部，所以此时将它从 就绪队列 移除, 调度
 		switch (runningProcess->getPriority())
 		{
 		case 0: // INIT
 			initReadyList.pop_front();   // 删除就绪队列第一个元素
 			blockList.push_back(runningProcess);
+			cout << "BUG:init进程阻塞,程序崩溃!" << endl; // BUG
+			exit(1);
+			cout << "[warnning]进程 " + runningProcess->getPname() + " 阻塞!" << endl;
+			runningProcess = initReadyList.front();   // 正在执行进程指针 指向就绪队列第一个
+			runningProcess->changeRUNNING();
 			break;
 
 		case 1: // USER
 			userReadyList.pop_front();
 			blockList.push_back(runningProcess);
+			cout << "[warnning]进程 " + runningProcess->getPname() + " 阻塞!" << endl;
+			// 降级判断
+			if (userReadyList.size() != 0)
+			{
+				runningProcess = userReadyList.front();   // 正在执行进程指针 指向就绪队列第一个
+				runningProcess->changeRUNNING();
+			}
+			else
+			{
+				runningProcess = initReadyList.front();   // 正在执行进程指针 指向就绪队列第一个
+				runningProcess->changeRUNNING();
+			}
 			break;
 
 		case 2: // SYSTEM
-			userReadyList.pop_front();
+			systemReadyList.pop_front();
 			blockList.push_back(runningProcess);
+			cout << "[warnning]进程 " + runningProcess->getPname() + " 阻塞!" << endl;
+			// 降级判断
+			if (systemReadyList.size() != 0)
+			{
+				runningProcess = systemReadyList.front();   // 正在执行进程指针 指向就绪队列第一个
+				runningProcess->changeRUNNING();
+			}
+			else
+			{
+				runningProcess = userReadyList.front();   // 正在执行进程指针 指向就绪队列第一个
+				runningProcess->changeRUNNING();
+			}
 			break;
 
 		default:
@@ -245,10 +304,11 @@ int processManager::requestResources(const string rName, const int number)
 		// 插入 RCB 资源阻塞等待队列
 		rcb->addWaitingList(runningProcess);
 
+		// 输出进程调度
+		cout << "[warnning]切换进程 " + runningProcess->getPname() + " 执行!" << endl;
 	}
 
-	// 调度
-	return 1;
+	return 4;
 }
 
 /* 根据rname在资源列表中寻找资源  */
@@ -286,9 +346,12 @@ bool  processManager::checkResourcesInitnum(string name, int num)
 
 	for (data = resourcesTable.begin(); data != resourcesTable.end(); data++)
 	{
-		if ((*data)->getInitNum() >= num)
+		if ((*data)->getRname() == name)
 		{
-			return true;
+			if ((*data)->getInitNum() >= num)
+			{
+				return true;
+			}
 		}
 	}
 
@@ -338,6 +401,10 @@ void processManager::showReadyList()
 	cout << "2: ";
 	for (systemList = systemReadyList.begin(); systemList != systemReadyList.end(); systemList++)
 	{
+		if (runningProcess->getPid() == (*systemList)->getPid())
+		{
+			cout << "->";
+		}
 		cout << (*systemList)->getPname() << " ";
 	}
 	cout << endl;
@@ -345,6 +412,10 @@ void processManager::showReadyList()
 	cout << "1: ";
 	for (userList = userReadyList.begin(); userList != userReadyList.end(); userList++)
 	{
+		if (runningProcess->getPid() == (*userList)->getPid())
+		{
+			cout << "->";
+		}
 		cout << (*userList)->getPname() << " ";
 	}
 	cout << endl;
@@ -352,6 +423,10 @@ void processManager::showReadyList()
 	cout << "0: ";
 	for (initList = initReadyList.begin(); initList != initReadyList.end(); initList++)
 	{
+		if (runningProcess->getPid() == (*initList)->getPid())
+		{
+			cout << "->";
+		}
 		cout << (*initList)->getPname() << " ";
 	}
 	cout << endl;

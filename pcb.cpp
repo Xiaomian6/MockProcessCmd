@@ -60,6 +60,20 @@ int PCB::changeBLOCKED()
 	return 0;
 }
 
+/* 进程设置为运行态 */
+int PCB::changeRUNNING()
+{
+	this->pStatus.pType = RUNNING;
+	return 0;
+}
+
+/* 进程设置为就绪态 */
+int PCB::changeREADY()
+{
+	this->pStatus.pType = READY;
+	return 0;
+}
+
 /* 进程设置为阻塞列表 */
 int PCB::changeBLOCKLIST()
 {
@@ -67,6 +81,12 @@ int PCB::changeBLOCKLIST()
 	return 0;
 }
 
+/* 进程设置为就绪队列 */
+int PCB::changeREADYLIST()
+{
+	this->pStatus.pList = READYLIST;
+	return 0;
+}
 
 /*************************************************************
  *  PCB

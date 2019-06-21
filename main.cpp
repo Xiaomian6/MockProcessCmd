@@ -308,7 +308,16 @@ void releaseResoursesCmd(const vector<string>& argvs)
  *************************************************************/
 void showReadyListCmd(const vector<string>& argvs)
 {
-	processManagerRun.showReadyList();
+	switch (argvs.size())
+	{
+	case 1:
+		processManagerRun.showReadyList();
+		break;
+
+	default:
+		cout << "[error]sready 命令不合法!" << endl;
+		break;
+	}
 }
 
 /*************************************************************
@@ -335,7 +344,16 @@ void showResourcesListCmd(const vector<string>& argvs)
  *************************************************************/
 void timeOutCmd(const vector<string>& argvs)
 {
+	switch (argvs.size())
+	{
+	case 1:
+		processManagerRun.Schedule();
+		break;
 
+	default:
+		cout << "[error]to 命令不合法!" << endl;
+		break;
+	}
 }
 
 /*************************************************************
@@ -439,7 +457,7 @@ void showBlockList(const vector<string>& argvs)
 		break;
 
 	default:
-		cout << "[error]ps 命令不合法!" << endl;
+		cout << "[error]pb 命令不合法!" << endl;
 		break;
 	}
 }

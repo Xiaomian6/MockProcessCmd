@@ -38,5 +38,7 @@ void showOneProcess(const vector<string>& argvs);        // 显示某个进程情况 tod
 
 RCB.cpp 请求资源问题，PCB resources结构体指针问题
 
+把多级队列封装成类，可快速拓展
+
 日志：
 
