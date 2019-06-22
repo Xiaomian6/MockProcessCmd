@@ -27,7 +27,7 @@ void showBlockList(const vector<string>& argvs);         // 显示阻塞列表
 
 // Cmd 命令列表
 static const map<string, void(*)(const vector<string> &)> mapCmd = {
-	//{ "init"    , initCmd               }, //
+	// { "init"    , initCmd               }, //
 	{ "cr"      , createProcessCmd      },   //
 	{ "de"      , destroyProcessCmd     },   //
 	{ "req"     , requestResourcesCmd   },   //

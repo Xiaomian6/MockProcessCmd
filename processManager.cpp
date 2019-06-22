@@ -1,5 +1,5 @@
 #include "processManager.h"
-
+#include <iomanip>
 using namespace std;
 
 processManager::processManager() // todo
@@ -67,7 +67,7 @@ int processManager::createProcess(const string pName, int priority)
 		runningProcess->changeREADY();
 		this->runningProcess = pcb;
 		runningProcess->changeRUNNING();
-		cout << "[warnning]切换进程 " + runningProcess->getPname() + " 运行" << endl;
+		cout << "[warnning]高优先级抢占,切换进程 " + runningProcess->getPname() + " 运行" << endl;
 	}
 
 	return 1;
@@ -729,9 +729,9 @@ void processManager::showReadyList()
 	list<PCB*>::iterator userList;
 	list<PCB*>::iterator systemList;
 
-	cout << "[show] ReadyList" << endl;
+	cout << "*****ReadyList*****" << endl;
 
-	cout << "2: ";
+	cout << "*2: ";
 	for (systemList = systemReadyList.begin(); systemList != systemReadyList.end(); systemList++)
 	{
 		if (runningProcess->getPid() == (*systemList)->getPid())
@@ -742,7 +742,7 @@ void processManager::showReadyList()
 	}
 	cout << endl;
 
-	cout << "1: ";
+	cout << "*1: ";
 	for (userList = userReadyList.begin(); userList != userReadyList.end(); userList++)
 	{
 		if (runningProcess->getPid() == (*userList)->getPid())
@@ -753,7 +753,7 @@ void processManager::showReadyList()
 	}
 	cout << endl;
 
-	cout << "0: ";
+	cout << "*0: ";
 	for (initList = initReadyList.begin(); initList != initReadyList.end(); initList++)
 	{
 		if (runningProcess->getPid() == (*initList)->getPid())
@@ -763,32 +763,40 @@ void processManager::showReadyList()
 		cout << (*initList)->getPname() << " ";
 	}
 	cout << endl;
+	cout << "******************"<< endl;
 }
 
 /* 显示主进程表 */
 void processManager::showProcessTable()
 {
 	vector<PCB*>::iterator data;
-	cout << "****** Process Table ******" << endl;
-	cout << "PID  NAME PRIORITY TYPE LIST FATHER " << endl;
+	cout << "************** Process Table ****************" << endl;
+	cout << left << setw(8) << "*PID"
+		 << setw(10) << "NAME"
+		<< setw(10) << "PRIORITY"
+		<< setw(10) << "TYPE"
+		<< setw(15) << "LIST"
+		<< setw(10) << "FATHER"
+		<< setw(10) << "CHILD"
+		<< endl;
 	for (data = processTable.begin(); data != processTable.end(); data++)
 	{
-		cout << (*data)->getPid() << "    ";
-		cout << (*data)->getPname() << "    ";
-		cout << (*data)->getPriority() << "    ";
-		cout << (*data)->getType() << "    ";
-		cout << (*data)->getList() << "    ";
+		cout << "*" << left << setw(8) << (*data)->getPid()
+			<< setw(10) << (*data)->getPname()
+			<< setw(10) << (*data)->getPriority()
+			<< setw(10) << (*data)->getType()
+			<< setw(15) << (*data)->getList();
 		if (((*data)->getFather()) != "null")
 		{
-			cout << (*data)->getFather() << "    ";
+			cout << setw(10) << (*data)->getFather() ;
 		}
 		else {
-			cout << "     " << "    ";
+			cout << setw(10) << " ";
 		}
 		(*data)->showChilds();
 		cout << endl;
 	}
-	cout << "*************************" << endl;
+	cout << "*************************************************" << endl;
 }
 
 /* 显示资源列表 */
@@ -797,25 +805,30 @@ void processManager::showResourcesTable()
 	vector<RCB*>::iterator data;
 
 	cout << "**** Resources Table ****" << endl;
-	cout << "Name  number" << endl;
+	cout << "*Name  number" << endl;
 	for (data = resourcesTable.begin(); data != resourcesTable.end(); data++)
 	{
-		cout << (*data)->getRname() << "       ";
+		cout << "*"<<(*data)->getRname() << "       ";
 		cout << (*data)->getNumber() << endl;
 	}
 	cout << "*************************" << endl;
 }
 
-/* 显示进程阻塞队列 */
+/* 显示进程阻塞队列blockList */
 void processManager::showBlockList()
 {
-	list<PCB*>::iterator data;
+	vector<RCB*>::iterator data;
+	int n = 0;
 
-	cout << "**** blockList ****" << endl;
-	for (data = blockList.begin(); data != blockList.end(); data++)
+	cout << "**** blockList *****" << endl;
+	for (data = resourcesTable.begin(); data != resourcesTable.end(); data++)
 	{
-		cout << (*data)->getPname() << "  ";
+		cout << "*R";
+		n++;
+		cout << n;
+		cout << " ";
+		(*data)->showWaitingListEach();
+		cout << endl;
 	}
-	cout << endl;
-	cout << "*************************" << endl;
+	cout << "********************" << endl;
 }

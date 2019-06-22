@@ -46,6 +46,7 @@ public: // get() show()
 	bool waitingListEmpty();
 	int getWaitingListFirstNum();
 	int getWaitingListFirstPID();
+	void showWaitingListEach();
 
 private:
 	int rid;                      // ×ÊÔ´ID

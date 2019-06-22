@@ -127,3 +127,13 @@ int RCB::getWaitingListFirstPID()
 {
 	return waitingList.front().BlockPID;
 }
+
+void RCB::showWaitingListEach()
+{
+	list<waiting>::iterator data;
+
+	for (data = waitingList.begin(); data != waitingList.end(); data++)
+	{
+		cout << data->pcb->getPname() << "  ";
+	}
+}
