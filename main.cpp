@@ -304,6 +304,14 @@ void releaseResoursesCmd(const vector<string>& argvs)
 		cout << "[error]释放超过此资源总量!" << endl;
 		break;
 
+	case 4:
+		cout << "[error]释放资源量无效!" << endl;
+		break;
+
+	case 5:
+		cout << "[error]该进程无此资源可释放!" << endl;
+		break;
+
 	default:
 		break;
 	}
@@ -383,7 +391,7 @@ void showHelpCmd()
 	cout << "创建进程:     cr [pName] [priority] 如:cr x 1" << endl;
 	cout << "撤销进程:     de [pname]            如: de x " << endl;
 	cout << "请求资源:     req [r-name] [number] 如: req R1 2" << endl;
-	cout << "释放资源:     del [r-name] [number] 如: rel R1 2" << endl;
+	cout << "释放资源:     rel [r-name] [number] 如: rel R1 2" << endl;
 	cout << "显示就绪队列: sready" << endl;
 	cout << "显示资源表:   sres" << endl;
 	cout << "显示进程表:   ps" << endl;

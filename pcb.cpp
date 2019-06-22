@@ -59,23 +59,41 @@ int PCB::deleteResource(int num, RCB* rcb)
 	int number = 0;
 	int i = 0;
 	int temp = 0;
+	bool flag = false;
 
 	// 遍历进程占有资源列表是否有相同的 RCB 块
 	for (vector<Resource>::iterator iter = Resources.begin(); iter != Resources.end(); iter++)
 	{
 		if (iter->rcb == rcb)
 		{
-			if (iter->ownNum >= num)  // 有效
+			if (iter->ownNum > num)  // 有效, 但不移除 Resource 块
+			{
+				number = iter->ownNum; // 占用的数量
+			}
+			else if (iter->ownNum == num)  // 有效, 但移除 Resource 块
 			{
 				number = iter->ownNum; // 占用的数量
 				temp = i;
+				flag = true;
 			}
-			
+			else  // 无效，返回 0
+			{
+				return 0;
+			}
 			
 		}
 		i++;
 	}
 
+	if (i == Resources.size()+1)  // 资源块不在
+	{
+		return -1;
+	}
+
+	if (flag == true)  // 移除 Resource 块
+	{
+		Resources.erase(Resources.begin() + i - 1);
+	}
 
 	return number;  // 返回占用的数量,error = 0
 }
@@ -236,4 +254,18 @@ void PCB::showChilds()
 		cout << (*data)->getPname() << "    ";
 	}
 
+}
+
+/* 返回占有资源列表的占有数量 */
+int PCB::getResourcesOwnNum(int RCBID)
+{
+	// 遍历进程占有资源列表是否有相同的 RCB 块
+	for (vector<Resource>::iterator iter = Resources.begin(); iter != Resources.end(); iter++)
+	{
+		if (iter->ownID == RCBID)
+		{
+			return iter->ownNum;
+		}
+	}
+	return 0;
 }

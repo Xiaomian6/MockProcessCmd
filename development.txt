@@ -42,3 +42,4 @@ RCB.cpp 请求资源问题，PCB resources结构体指针问题
 
 日志：
 
+释放资源抢占 升级 BUG

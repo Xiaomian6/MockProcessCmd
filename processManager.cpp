@@ -89,10 +89,11 @@ int processManager::destroyProcess(const string delname)
 
 	PCB* pcb = (*delData);
 
-	// free resources 
-
-
 	// 嵌套调用，撤销所有子孙进程 
+	deleteChildProcess(pcb);
+
+
+	// free resources 
 
 
 
@@ -128,7 +129,7 @@ void processManager::Schedule()
 }
 
 /* 删除child node 进程 */
-int processManager::deleteChildProcess(int pid)
+int processManager::deleteChildProcess(PCB* pcb)
 {
 
 	return 1;
@@ -238,7 +239,7 @@ int processManager::requestResources(const string rName, const int number)
 	// request
 	if (rcb->getNumber() >= number)  // 剩余资源足够
 	{
-		operand = rcb->requestR(number, runningProcess);  // 减去请求数量资源
+		operand = rcb->requestR(number);  // 减去请求数量资源
 		runningProcess->addResource(number, rcb);         // 把rcb插入pcb的占有资源列表
 		return 1;
 	}
@@ -249,6 +250,9 @@ int processManager::requestResources(const string rName, const int number)
 
 		// 进程加入 阻塞列表
 		runningProcess->changeBLOCKLIST();
+
+		// 插入 RCB 资源阻塞等待队列
+		rcb->addWaitingList(number, runningProcess);
 
 		// 因为运行进程位于绪队列首部，所以此时将它从 就绪队列 移除, 调度
 		switch (runningProcess->getPriority())
@@ -301,8 +305,6 @@ int processManager::requestResources(const string rName, const int number)
 			break;
 		}
 
-		// 插入 RCB 资源阻塞等待队列
-		rcb->addWaitingList(runningProcess);
 
 		// 输出进程调度
 		cout << "[warnning]切换进程 " + runningProcess->getPname() + " 执行!" << endl;
@@ -314,7 +316,11 @@ int processManager::requestResources(const string rName, const int number)
 /* 释放资源 */
 int processManager::releaseResources(const string rName, const int number)
 {
-	int operand = 0; // 操作数
+	int operand = 0;  // 操作数
+	int tempPID = -1;
+	int tempNUM = 0;
+	
+	vector<PCB*>::iterator tempPCB;
 
 	// 检查是否有此资源 error = 2
 	if (checkResourcesName(rName) == false)
@@ -333,13 +339,95 @@ int processManager::releaseResources(const string rName, const int number)
 
 	// release
 	
-	// 将资源 rcb 从进程 Resources占有资源列表中移除
+	// 将资源 rcb 从从当前进程 Resources占有资源列表中移除
+	// 并资源状态 数量rStatus + number
+	operand = runningProcess->deleteResource(number, rcb);
 
-	// 并资源状态 数量rStatus + number              
-
+	if (operand == 0)  // 释放资源数量无效
+	{
+		return 4;
+	} 
+	else if (operand == -1) // 该进程无该资源
+	{
+		return 5;
+	}
+	else
+	{
+		rcb->releaseR(operand);  // rStatus + number
+	}
+             
+	// 跟正在执行进程无关
 	// 如果阻塞队列不为空, 且阻塞队列首部进程需求的资源数 req 小于等于可用资源数量 u，则唤醒这个阻塞进程，放入就绪队列
+	while ((rcb->waitingListEmpty() == false) && (rcb->isWaitingListFirst() == true))
+	{
+		rcb->requestR(rcb->getWaitingListFirstNum());  // 减去请求数量资源
+		tempPID = rcb->getWaitingListFirstPID();
+		tempNUM = rcb->getWaitingListFirstNum();
+		tempPCB = findProcessbypID(tempPID);
+		PCB* changePCB = (*tempPCB);  // 找到RCB 资源阻塞等待队列 第一个进程
 
-	 //基于优先级的抢占式调度策略，因此当有进程获得资源时，需要查看当前的优先级情况并进行调度
+		rcb->deleteWaitingList();   // 从资源的阻塞队列中移除 第一个进程
+
+		changePCB->changeREADY();
+		changePCB->changeREADYLIST();
+		// 把 rcb 插入到 changePCB 占有资源列表中
+		changePCB->addResource(tempNUM, rcb);         // 把rcb插入pcb的占有资源列表
+
+	    // 插入 changePCB 到就绪队列 
+		// 基于优先级的抢占式调度策略，因此当有进程获得资源时，需要查看当前的优先级情况并进行调度
+		switch (changePCB->getPriority())
+		{
+		case 0: // INIT update
+			deleteBlockList(changePCB);
+			initReadyList.push_back(changePCB);
+			cout << "[warnning]进程 " + changePCB->getPname() + " 就绪!" << endl;
+			// 降级判断
+			break;
+
+		case 1: // USER 
+			// 升级判定
+			if (userReadyList.size() == 0)
+			{
+				deleteBlockList(changePCB);
+				userReadyList.push_back(changePCB);
+				cout << "[warnning]进程 " + changePCB->getPname() + " 就绪!" << endl;
+				runningProcess = changePCB;  // 高优先级抢占运行
+				changePCB->changeRUNNING();
+				cout << "[warnning]高优先级进程 " + runningProcess->getPname() + " 抢占" << endl;
+			}
+			else
+			{
+				deleteBlockList(changePCB);
+				userReadyList.push_back(changePCB);
+				cout << "[warnning]进程 " + changePCB->getPname() + " 就绪!" << endl;
+			}
+			break;
+
+		case 2: // SYSTEM 
+			// 升级判定
+			if (systemReadyList.size() == 0)
+			{
+				deleteBlockList(changePCB);
+				systemReadyList.push_back(changePCB);
+				cout << "[warnning]进程 " + changePCB->getPname() + " 就绪!" << endl;
+				runningProcess = changePCB;  // 高优先级抢占运行
+				changePCB->changeRUNNING();
+				cout << "[warnning]高优先级进程 " + runningProcess->getPname() + " 抢占" << endl;
+			}
+			else
+			{
+				deleteBlockList(changePCB);
+				systemReadyList.push_back(changePCB);
+				cout << "[warnning]进程 " + changePCB->getPname() + " 就绪!" << endl;
+			}
+			break;
+
+		default:
+			break;
+		}
+
+	}
+
 	return 0;
 }
 
@@ -391,6 +479,26 @@ bool  processManager::checkResourcesInitnum(string name, int num)
 	return false; // error
 }
 
+/* 删除阻塞队列指定进程项 */
+int processManager::deleteBlockList(PCB* pcb)
+{
+	list<PCB*>::iterator data;
+
+	for (data = blockList.begin(); data != blockList.end(); )
+	{
+		if ((*data)->getPid() == pcb->getPid())
+		{
+			blockList.erase(data++);
+			return 1;
+		}
+		else
+		{
+			data++;
+		}
+		
+	}
+	return 0;
+}
 
 /*************************************************************
  *  processManager

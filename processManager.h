@@ -23,12 +23,13 @@ public: // pcb
 
 	void Schedule(); // µ÷¶È
 
-	int deleteChildProcess(int pid);
+	int deleteChildProcess(PCB* pcb);
 
 	vector<PCB*>::iterator findProcessbypID(int pid);
 	vector<PCB*>::iterator findProcessbypName(string pname);
 	bool checkProcessName(string name);
 	bool checkProcessID(int pid);
+
 public: // rcb
 	void createResources();
 	int requestResources(const string rName, const int number);
@@ -36,6 +37,7 @@ public: // rcb
 	RCB* findResourcesByName(string rname);
 	bool checkResourcesName(string name);
 	bool checkResourcesInitnum(string name, int num);
+	int deleteBlockList(PCB* pcb);
 
 public: // get() show()
 	int getRunningProcess();

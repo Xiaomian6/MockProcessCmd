@@ -64,6 +64,7 @@ public:
 	string getList();
 	string getFather();
 	void showChilds();        //函数内输出
+	int getResourcesOwnNum(int RCBID);
 
 private:
 	int pid;                       // 进程ID
