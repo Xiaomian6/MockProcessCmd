@@ -3,6 +3,8 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <iostream>
+
 #include "rcb.h"
 
 using namespace std;
@@ -37,7 +39,7 @@ struct processStatus
 struct processCreationTree
 {
 	PCB* parent;
-	vector<PCB*> child;
+	list<PCB*> child;
 };
 
 class PCB {
@@ -47,6 +49,9 @@ public:
 	~PCB();
 public:
 	int addChild(PCB* child);
+	int deleteChild();
+	int deleteChild(PCB* pcb);
+	int deleteFather();
 	int addResource(int num, RCB *rcb);
 	int deleteResource(int num, RCB* rcb);
 	int changeBLOCKED();
@@ -65,6 +70,11 @@ public:
 	string getFather();
 	void showChilds();        //函数内输出
 	int getResourcesOwnNum(int RCBID);
+	bool getpTreeEmpty();
+	int getpTreeFirstChild();
+	bool getResourcesEmpty();
+	RCB* getResourcesFirstRCB();
+
 
 private:
 	int pid;                       // 进程ID

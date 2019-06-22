@@ -20,15 +20,17 @@ public:
 public: // pcb
 	int createProcess(const string pName,int priority);
 	int destroyProcess(const string delname);
-
 	void Schedule(); // µ÷¶È
-
 	int deleteChildProcess(PCB* pcb);
+	int deleteProcessTable(PCB* pcb);
 
 	vector<PCB*>::iterator findProcessbypID(int pid);
 	vector<PCB*>::iterator findProcessbypName(string pname);
 	bool checkProcessName(string name);
 	bool checkProcessID(int pid);
+	int freeResources(PCB* pcb);
+	int deleteUserReadyList(PCB* pcb);
+	int deleteSystemReadyList(PCB* pcb);
 
 public: // rcb
 	void createResources();

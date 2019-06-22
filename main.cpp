@@ -192,7 +192,6 @@ void destroyProcessCmd(const vector<string>& argvs)
 
 	// 1 - 合法
 	// 2 - 进程名不存在
-	// 3 - 
 	switch (illegalShow)
 	{
 	case 1:
@@ -201,10 +200,6 @@ void destroyProcessCmd(const vector<string>& argvs)
 
 	case 2:
 		cout << "[error]进程名不存在!" << endl;
-		break;
-
-	case 3:
-		cout << "[error]!" << endl;
 		break;
 
 	default:

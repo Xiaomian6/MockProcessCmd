@@ -34,6 +34,41 @@ int PCB::addChild(PCB* child)
 	return 1;
 }
 
+/* 释放进程的子进程 */
+int PCB::deleteChild()
+{
+	this->pTree.child.pop_front();
+	return 0;
+}
+
+/* 释放进程的子进程 带参数 重载*/
+int PCB::deleteChild(PCB* pcb)
+{
+	list<PCB*>::iterator data;
+
+	for (data = pTree.child.begin(); data != pTree.child.end(); )
+	{
+		if ((*data)->getPid() == pcb->getPid())
+		{
+			pTree.child.erase(data++);
+			return 1;
+		}
+		else
+		{
+			data++;
+		}
+
+	}
+	return 0;
+}
+
+/* 释放进程的父进程 */
+int PCB::deleteFather()
+{
+	this->pTree.parent->deleteChild(this);
+	return 0;
+}
+
 /* 添加进程的资源块 */
 int PCB::addResource(int num, RCB* rcb)
 {
@@ -247,7 +282,7 @@ string PCB::getFather()
 // 函数内输出
 void PCB::showChilds()
 {
-	vector<PCB*>::iterator data;
+	list<PCB*>::iterator data;
 	
 	for (data = pTree.child.begin(); data != pTree.child.end(); data++)
 	{
@@ -268,4 +303,43 @@ int PCB::getResourcesOwnNum(int RCBID)
 		}
 	}
 	return 0;
+}
+
+/* 返回查询该进程是否有子进程 */
+bool PCB::getpTreeEmpty()
+{
+	list<PCB*>::iterator data;
+	if (this->pTree.child.size() != 0)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+/* 返回该进程第一个子进程ID */
+int PCB::getpTreeFirstChild()
+{
+	return this->pTree.child.front()->getPid();
+}
+
+/* 返回该进程是否占有资源列表为空 */
+bool PCB::getResourcesEmpty()
+{
+	if (this->Resources.size() == 0)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+/* 返回占有资源列表第一个ID */
+RCB* PCB::getResourcesFirstRCB()
+{
+	return this->Resources.back().rcb;
 }

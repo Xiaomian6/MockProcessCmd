@@ -92,15 +92,7 @@ int processManager::destroyProcess(const string delname)
 	// 嵌套调用，撤销所有子孙进程 
 	deleteChildProcess(pcb);
 
-
-	// free resources 
-
-
-
-	// delete PCB and update all pointers 
-
-
-	return 1;
+	return 4;
 }
 
 /* 进程调度Schedule */
@@ -131,8 +123,77 @@ void processManager::Schedule()
 /* 删除child node 进程 */
 int processManager::deleteChildProcess(PCB* pcb)
 {
+	int temp = -1;
+	int tempID = 0;
+	vector<PCB*>::iterator delData;
 
-	return 1;
+	while (pcb->getpTreeEmpty() == true) // 循环Kill childs
+	{
+		tempID = pcb->getpTreeFirstChild();// 获取该进程第一个子进程
+		delData = this->findProcessbypID(tempID);
+		PCB* tempPCB = (*delData);
+		pcb->deleteChild();  // 移除该进程的一个子进程
+		deleteChildProcess(tempPCB);    // 嵌套下层
+	}
+
+	RCB* rcb;
+	// Kill myself
+	// free resources
+	temp = freeResources(pcb);
+	if (temp != 1)  // test bug
+	{
+		cout << "BUG BUG BUG!!!" << endl;
+	}
+
+	// 调度
+	if (pcb == runningProcess)  // 如是执行态进程 第一个就绪态
+	{
+		if (systemReadyList.size() == 1)  // 如果高级system就绪进程队列就剩下执行态进程自己一个 降级
+		{
+			runningProcess = userReadyList.back();
+			systemReadyList.pop_back();
+		}else if(userReadyList.size() == 1)  // 如果高级user就绪进程队列就剩下执行态进程自己一个 降级
+		{
+			runningProcess = initReadyList.back();
+			userReadyList.pop_back();
+		}
+		else {
+			Schedule(); // 调度
+			if (pcb->getPriority() == 1)
+			{
+				deleteUserReadyList(pcb);
+			}
+			else if (pcb->getPriority() == 2)
+			{
+				deleteSystemReadyList(pcb);
+			}
+			else
+			{
+
+			}
+		}
+	}
+	else if (pcb->getType() == "READY")  // 就绪
+	{
+		if (pcb->getPriority() == 1)
+		{
+			deleteUserReadyList(pcb);
+		}
+		else if (pcb->getPriority() == 2)
+		{
+			deleteSystemReadyList(pcb);
+		}
+		else   
+		{
+
+		}
+	}  // 前面已经处理完 阻塞态
+	cout << "进程 " + pcb->getPname() + "已撤销!" << endl;
+	// 释放 PCB 空间
+	deleteProcessTable(pcb);
+	pcb->deleteFather();
+	delete(pcb);
+	return 0;
 }
 
 /* 根据 pid 在进程表中寻找进程  */
@@ -189,6 +250,156 @@ bool processManager::checkProcessID(int id)
 	}
 
 	return false;
+}
+
+/* 循环 freeResources */
+int processManager::freeResources(PCB* pcb)
+{
+	int tempPID = -1;
+	int temp = 0;
+	int tempNUM = 0;
+	RCB* rcb;
+	vector<PCB*>::iterator tempPCB;
+
+	// 查询进程 是否有占有的资源
+	while (pcb->getResourcesEmpty() == false)  // 不为空
+	{
+		rcb = pcb->getResourcesFirstRCB();  // 获取第一个RCB
+		// 将资源 rcb 从pcb 进程 Resources占有资源列表中移除
+	    // 并资源状态 数量rStatus + number
+		temp = pcb->deleteResource(pcb->getResourcesOwnNum(rcb->getRid()), rcb);
+		rcb->releaseR(temp);
+
+		// 跟正在执行进程无关
+	    // 如果 RCB 阻塞队列不为空, 且阻塞队列首部进程需求的资源数 req 小于等于可用资源数量 u，则唤醒这个阻塞进程，放入就绪队列
+		while ((rcb->waitingListEmpty() == false) && (rcb->isWaitingListFirst() == true))
+		{
+			rcb->requestR(rcb->getWaitingListFirstNum());  // 减去请求数量资源
+			tempPID = rcb->getWaitingListFirstPID();
+			tempNUM = rcb->getWaitingListFirstNum();
+			tempPCB = findProcessbypID(tempPID);
+			PCB* changePCB = (*tempPCB);  // 找到RCB 资源阻塞等待队列 第一个进程
+
+			rcb->deleteWaitingList();   // 从资源的阻塞队列中移除 第一个进程
+
+			changePCB->changeREADY();
+			changePCB->changeREADYLIST();
+			// 把 rcb 插入到 changePCB 占有资源列表中
+			changePCB->addResource(tempNUM, rcb);         // 把rcb插入pcb的占有资源列表
+
+			// 插入 changePCB 到就绪队列 
+			// 基于优先级的抢占式调度策略，因此当有进程获得资源时，需要查看当前的优先级情况并进行调度
+			switch (changePCB->getPriority())
+			{
+			case 0: // INIT update
+				deleteBlockList(changePCB);
+				initReadyList.push_back(changePCB);
+				// 降级判断
+				break;
+
+			case 1: // USER 
+				// 升级判定
+				if (userReadyList.size() == 0)
+				{
+					deleteBlockList(changePCB);
+					userReadyList.push_back(changePCB);				
+					runningProcess = changePCB;  // 高优先级抢占运行
+					changePCB->changeRUNNING();
+				}
+				else
+				{
+					deleteBlockList(changePCB);
+					userReadyList.push_back(changePCB);
+				}
+				break;
+
+			case 2: // SYSTEM 
+				// 升级判定
+				if (systemReadyList.size() == 0)
+				{
+					deleteBlockList(changePCB);
+					systemReadyList.push_back(changePCB);
+					runningProcess = changePCB;  // 高优先级抢占运行
+					changePCB->changeRUNNING();
+				}
+				else
+				{
+					deleteBlockList(changePCB);
+					systemReadyList.push_back(changePCB);
+				}
+				break;
+
+			default:
+				break;
+			}
+
+		}
+	}
+	
+	return 1;
+}
+
+/* 删除userReadyList指定进程项 */
+int processManager::deleteUserReadyList(PCB* pcb)
+{
+	list<PCB*>::iterator data;
+
+	for (data = userReadyList.begin(); data != userReadyList.end(); )
+	{
+		if ((*data)->getPid() == pcb->getPid())
+		{
+			userReadyList.erase(data++);
+			return 1;
+		}
+		else
+		{
+			data++;
+		}
+
+	}
+	return 0;
+}
+
+/* 删除systemReadyList指定进程项 */
+int processManager::deleteSystemReadyList(PCB* pcb)
+{
+	list<PCB*>::iterator data;
+
+	for (data = systemReadyList.begin(); data != systemReadyList.end(); )
+	{
+		if ((*data)->getPid() == pcb->getPid())
+		{
+			systemReadyList.erase(data++);
+			return 1;
+		}
+		else
+		{
+			data++;
+		}
+
+	}
+	return 0;
+}
+
+/* 删除主进程某项 */
+int processManager::deleteProcessTable(PCB* pcb)
+{
+	vector<PCB*>::iterator data;
+
+	for (data = processTable.begin(); data != processTable.end(); )
+	{
+		if ((*data)->getPid() == pcb->getPid())
+		{
+			processTable.erase(data++);
+			return 1;
+		}
+		else
+		{
+			data++;
+		}
+
+	}
+	return 0;
 }
 
 /*************************************************************
