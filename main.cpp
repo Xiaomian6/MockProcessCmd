@@ -245,7 +245,7 @@ void requestResourcesCmd(const vector<string>& argvs)
 	switch (illegalShow)
 	{
 	case 1:
-		cout << "[success]资源(name:" << argvs[1] << ")请求成功!" << endl;
+		cout << "[success]资源 " << argvs[1] << " 请求成功!" << endl;
 		break;
 
 	case 2:
@@ -263,38 +263,45 @@ void requestResourcesCmd(const vector<string>& argvs)
 
 /*************************************************************
  *  Function: release resources
- *  Format: del [r-name] [number]
+ *  Format: rel [r-name] [number]
  *************************************************************/
 void releaseResoursesCmd(const vector<string>& argvs)
 {
 	int illegalShow = 0; // 不合法显示 
+	int requestNum = 0;
 
 	switch (argvs.size())
 	{
-	case 2:  // de [pname]
-		illegalShow = processManagerRun.destroyProcess(argvs[1]);
+	case 2:  // rel [r-name] 缺省number 默认 number = 1
+
+		illegalShow = processManagerRun.releaseResources(argvs[1], 1);
+		break;
+
+	case 3:  // rel [r-name] [number]
+		requestNum = stoi(argvs[2]); // 把string转为int
+		illegalShow = processManagerRun.releaseResources(argvs[1], requestNum);
 		break;
 
 	default:
-		cout << "[error]de 命令不合法!" << endl;
+		cout << "[error]rel 命令不合法!" << endl;
 		break;
 	}
 
 	// 1 - 合法
-	// 2 - 进程名不存在
-	// 3 - 
+	// 2 - 释放资源不存在
+	// 3 - 释放超过此资源总量
 	switch (illegalShow)
 	{
 	case 1:
-		cout << "[success]进程(name:" << argvs[1] << ")撤销成功!" << endl;
+		cout << "[success]资源 " << argvs[1] << " 释放成功!" << endl;
 		break;
 
 	case 2:
-		cout << "[error]进程名不存在!" << endl;
+		cout << "[error]释放资源不存在!" << endl;
 		break;
 
 	case 3:
-		cout << "[error]!" << endl;
+		cout << "[error]释放超过此资源总量!" << endl;
 		break;
 
 	default:

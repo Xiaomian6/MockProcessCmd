@@ -311,6 +311,39 @@ int processManager::requestResources(const string rName, const int number)
 	return 4;
 }
 
+/* 释放资源 */
+int processManager::releaseResources(const string rName, const int number)
+{
+	int operand = 0; // 操作数
+
+	// 检查是否有此资源 error = 2
+	if (checkResourcesName(rName) == false)
+	{
+		return 2;
+	}
+
+	// 检查请求是否超过此资源总量 error = 3
+	if (checkResourcesInitnum(rName, number) == false)
+	{
+		return 3;
+	}
+
+	// 根据 rName 找到相应 RCB块
+	RCB* rcb = findResourcesByName(rName);
+
+	// release
+	
+	// 将资源 rcb 从进程 Resources占有资源列表中移除
+
+	// 并资源状态 数量rStatus + number              
+
+	// 如果阻塞队列不为空, 且阻塞队列首部进程需求的资源数 req 小于等于可用资源数量 u，则唤醒这个阻塞进程，放入就绪队列
+
+	 //基于优先级的抢占式调度策略，因此当有进程获得资源时，需要查看当前的优先级情况并进行调度
+	return 0;
+}
+
+
 /* 根据rname在资源列表中寻找资源  */
 RCB* processManager::findResourcesByName(string rname)
 {
@@ -358,25 +391,6 @@ bool  processManager::checkResourcesInitnum(string name, int num)
 	return false; // error
 }
 
-/* 移除 Init 就绪队列首部 */
-bool processManager::removeInitReadyListFirst()
-{
-	
-
-	return false; // error
-}
-
-/* 移除 User 就绪队列首部 */
-bool processManager::removeUserReadyListFirst()
-{
-	return false;
-}
-
-/* 移除 System 就绪队列首部 */
-bool processManager::removeSystemReadyListFirst()
-{
-	return false;
-}
 
 /*************************************************************
  *  processManager

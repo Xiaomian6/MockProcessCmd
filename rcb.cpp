@@ -15,7 +15,7 @@ RCB::~RCB()
 
 }
 
-/* 请求资源 */ // delete
+/* 请求资源 */ 
 int RCB::requestR(const int num, PCB* pcb)
 {
 	if (this->rStatus >= num)  // 剩余资源足够
@@ -26,6 +26,17 @@ int RCB::requestR(const int num, PCB* pcb)
 	else // 剩余资源不够，阻塞
 	{
 
+	}
+	return 0;
+}
+
+/* 释放资源 */
+int RCB::releaseR(const int num, PCB* pcb)
+{
+	this->rStatus = this->rStatus + num;
+	if (this->rStatus > this->initNum)
+	{
+		cout << "BUG BUG BUG" << endl;
 	}
 	return 0;
 }

@@ -53,6 +53,33 @@ int PCB::addResource(int num, RCB* rcb)
 	return 0;
 }
 
+/* 移除进程的资源块 */
+int PCB::deleteResource(int num, RCB* rcb)
+{
+	int number = 0;
+	int i = 0;
+	int temp = 0;
+
+	// 遍历进程占有资源列表是否有相同的 RCB 块
+	for (vector<Resource>::iterator iter = Resources.begin(); iter != Resources.end(); iter++)
+	{
+		if (iter->rcb == rcb)
+		{
+			if (iter->ownNum >= num)  // 有效
+			{
+				number = iter->ownNum; // 占用的数量
+				temp = i;
+			}
+			
+			
+		}
+		i++;
+	}
+
+
+	return number;  // 返回占用的数量,error = 0
+}
+
 /* 进程设置为阻塞态 */
 int PCB::changeBLOCKED()
 {

@@ -32,12 +32,10 @@ public: // pcb
 public: // rcb
 	void createResources();
 	int requestResources(const string rName, const int number);
+	int releaseResources(const string rName, const int number);
 	RCB* findResourcesByName(string rname);
 	bool checkResourcesName(string name);
 	bool checkResourcesInitnum(string name, int num);
-	bool removeInitReadyListFirst();
-	bool removeUserReadyListFirst();
-	bool removeSystemReadyListFirst();
 
 public: // get() show()
 	int getRunningProcess();

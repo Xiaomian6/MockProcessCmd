@@ -48,6 +48,7 @@ public:
 public:
 	int addChild(PCB* child);
 	int addResource(int num, RCB *rcb);
+	int deleteResource(int num, RCB* rcb);
 	int changeBLOCKED();
 	int changeRUNNING();
 	int changeREADY();

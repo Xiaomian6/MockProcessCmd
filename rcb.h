@@ -17,7 +17,8 @@ public:
 	~RCB();
 
 public:  
-	int requestR(const int num,PCB* pcb);
+	int requestR(const int num, PCB* pcb);
+	int releaseR(const int num, PCB* pcb);
 	int addWaitingList(PCB* pcb);
 
 public: // get() show()
