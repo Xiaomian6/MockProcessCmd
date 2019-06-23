@@ -1,45 +1,44 @@
-开发进度:
+# 开发记录:
 
-分模块:
+## 分小模块:
 
-# Cmd功能
-# init进程
-# 创建新进程
-# 释放进程
-# 请求资源
-# 释放资源
-# 调度程序
-# 测试验证输入
-# 界面优化
+- Cmd功能
+- init进程
+- 创建新进程
+- 释放进程
+- 请求资源
+- 释放资源
+- 调度程序
+- 测试验证输入
+- 界面优化
 
 void inputCmd(vector<string>& argvs);                    // 命令输入模块
 void initCmd();                                          // Cmd初始化模块
 void createProcessCmd(const vector<string>& argvs);      // 进程创建模块
 void destroyProcessCmd(const vector<string>& argvs);     // 进程释放模块
-void requestResourcesCmd(const vector<string>& argvs);   // 资源申请模块 todo
-void releaseResoursesCmd(const vector<string>& argvs);   // 资源释放模块 todp
-void showReadyListCmd(const vector<string>& argvs);      // 显示就绪队列 todo
-void showResourcesListCmd(const vector<string>& argvs);  // 显示资源情况 todo
-void timeOutCmd(const vector<string>& argvs);            // 时间片切换(调度) todo
+void requestResourcesCmd(const vector<string>& argvs);   // 资源申请模块 
+void releaseResoursesCmd(const vector<string>& argvs);   // 资源释放模块 
+void showReadyListCmd(const vector<string>& argvs);      // 显示就绪队列 
+void showResourcesListCmd(const vector<string>& argvs);  // 显示资源情况 
+void timeOutCmd(const vector<string>& argvs);            // 时间片切换(调度) 
 void quitCmd(const vector<string>& argvs);               // 退出Cmd
-void showHelpCmd(const vector<string>& argvs);           // 显示帮助信息(自启) todo
+void showHelpCmd(const vector<string>& argvs);           // 显示帮助信息(自启) 
 void showProcessTable(const vector<string>& argvs);      // 显示进程表 
-void showOneProcess(const vector<string>& argvs);        // 显示某个进程情况 todo
+void showOneProcess(const vector<string>& argvs);        // 显示某个进程情况 
 
-待处理key:
-	todo
-	del
+## 待处理key:
+- todo
+- del
 
-改进：
+## 需要改进：
 
-把容器换成链式指针数据结构
+- 把容器换成链式指针数据结构
+- 把多级队列封装成类，可快速拓展
+- 根据进程的Type进行优先级墙长调度，去除臃肿的升降级代码
+- 优化STL容器的使用
 
-上次开发记录:
+## 已知BUG日志：
 
-RCB.cpp 请求资源问题，PCB resources结构体指针问题
+- 释放资源高优先级抢占升级
+- 撤销进程循环free resources逻辑
 
-把多级队列封装成类，可快速拓展
-
-日志：
-
-释放资源抢占 升级 BUG

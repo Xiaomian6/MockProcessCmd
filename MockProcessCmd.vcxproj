@@ -152,7 +152,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="MockProcessCmd.cpp" />
     <ClCompile Include="pcb.cpp" />
     <ClCompile Include="processManager.cpp" />
     <ClCompile Include="rcb.cpp" />
